@@ -2,32 +2,57 @@
 
 <head>
     <title>UMCP Speed Test</title>
+    
+    <style>
+        body {
+            font-family: Arial;
+        }
+        h2 {
+            margin-top: 50px;
+        }
+        button {
+            margin: 10px;
+            width: 150px;
+        }
+        .property {
+            font-weight: bold;
+            display: inline-block;
+            width: 160px;
+            padding: 5px;
+            
+        }
+        .value {
+            display: inline;
+        }
+    
+    
+    </style>
+    
+    
 </head>
 
 <body>
 
     <h1> UMCP Speed Test</h1>
     
-    <div class="key">Status:</div><div class="value" id="status_text">--</div>
+    <div class="property">Status:</div><div class="value" id="status_text">--</div>
     
     <h2>Settings</h2>
-    <div><input type="range" id="interval_ms" min=5 max=500 value=500 onchange="confirm_slider()" onmousemove="update_slider_info()"></input></div>
-    <div class="key">Desired Interval:</div><div class="value"><span id="interval_readout">--</span> ms</div>
-    <div class="key">Desired Frequency:</div><div class="value"><span id="frequency_readout">--</span> Hz</div>
+    <div><input type="range" style="width: 600px" id="interval_ms" min=5 max=500 value=500 onchange="confirm_slider()" onmousemove="update_slider_info()"></input></div>
+    <div><div class="property">Event Rate:</div><div class="value"><span id="interval_readout">--</span> ms, <span id="frequency_readout">--</span> Hz</div></div>
     <div><button>Activate Test</button><button>Deactive Test</button></div>
     <div><button>Add Sequence</button><button>Discard Sequence</button></div>
     
     <h2>Timing Statistics</h2>
-    <div class="key">Average Interval:</div><div class="value"><span id="average_interval">--</span> ms</div>
-    <div class="key">Average Frequency:</div><div class="value"><span id="average_frequency">--</span> Hz</div>
-    <div class="key">Maximum Drift:</div><div class="value"><span id="max_drift">--</span> ms (<span id="max_drift_pct">--</span>%)</div>
+    <div><div class="property">Average:</div><div class="value"><span id="average_interval">--</span> ms, <span id="average_frequency">--</span> Hz (<span id="average_pct">--</span>%)</div></div>
+    <div><div class="property">Maximum Drift:</div><div class="value"><span id="max_drift">--</span> ms (<span id="max_drift_pct">--</span>%)</div></div>
     
     <h2>UMCP Statistics</h2>
-    <div class="key">Active Sequences:</div><div class="value" id="active_seqs_count_text">--</div>
-    <div class="key">Requests Sent:</div><div class="value" id="requests_status">--</div>
-    <div class="key">Successes:</div><div class="value" id="requests_successful">--</div>
-    <div class="key">Failures:</div><div class="value" id="requests_failed">--</div>
-    <div class="key">Outstanding:</div><div class="value" id="awaiting_status">--</div>
+    <div><div class="property">Active Sequences:</div><div class="value" id="active_seqs_count_text">--</div></div>
+    <div><div class="property">Requests Sent:</div><div class="value" id="requests_status">--</div></div>
+    <div><div class="property">Successes:</div><div class="value" id="requests_successful">--</div></div>
+    <div><div class="property">Failures:</div><div class="value" id="requests_failed">--</div></div>
+    <div><div class="property">Outstanding:</div><div class="value" id="awaiting_status">--</div></div>
     
     <script src="../node_modules/umcp-js-lib/dist/umcpjslib.js"></script>
     <script src="./umcp-speed-test.js"></script>

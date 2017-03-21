@@ -13,10 +13,12 @@ var interval_readout = document.getElementById("interval_readout");
 var frequency_readout = document.getElementById("frequency_readout");
 var last_pulse_time = null;
 var next_pulse_time = null;
-var measured_intervals_limit = 10;
+var measured_limit = 10;
 var measured_intervals = [];
-var measured_intervals_index = 0;
+var measured_drifts = [];
+var measured_index = 0;
 var average_interval = document.getElementById("average_interval");
+var average_pct = document.getElementById("average_pct");
 var average_frequency = document.getElementById("average_frequency");
 var max_drift = document.getElementById("max_drift");
 var max_drift_pct = document.getElementById("max_drift_pct");
@@ -29,6 +31,8 @@ var requests_status = document.getElementById("requests_status");
 var requests_successful = document.getElementById("requests_successful");
 var requests_failed = document.getElementById("requests_failed");
 var awaiting_status = document.getElementById("awaiting_status");
+
+update_slider_info();
 
 status_text.innerText = "Creating UMCP Client Instance...";
 var umcp = new umcplib('http://localhost:8090');
@@ -85,20 +89,36 @@ function update_stats(){
         max_drift_pct.innerText = "--";
         average_interval.innerText = "--";
         average_frequency.innerText = "--";
+        average_pct.innerText = "--";
     } else {
-        let max = Math.max.apply(Math, measured_intervals)-confirmed_interval;
-        let min = Math.min.apply(Math, measured_intervals)-confirmed_interval;
+        let max = Math.max.apply(Math, measured_drifts);
+        let min = Math.min.apply(Math, measured_drifts);
+        let drift = null;
+        let drift_pct = null;
         if(Math.abs(max)>Math.abs(max)){
-            max_drift.innerText = max;
-            max_drift_pct.innerText = (max/confirmed_interval)*100;
+            drift = max;
+            drift_pct = (max/confirmed_interval)*100;
         } else {
-            max_drift.innerText = min;
-            max_drift_pct.innerText = (min/confirmed_interval)*100;
+            drift = min;
+            drift_pct = (min/confirmed_interval)*100;
+        }
+        if(drift>=0){
+            max_drift.innerText = "+" + drift.toFixed(2);
+            max_drift_pct.innerText = "+" + drift_pct.toFixed(2);
+        } else {
+            max_drift.innerText = drift.toFixed(2);
+            max_drift_pct.innerText = drift_pct.toFixed(2);
         }
         let sum = measured_intervals.reduce(function(a, b) { return a + b; }, 0);
         let avg = sum/measured_intervals.length;
-        average_interval.innerText = avg;
-        average_frequency.innerText = 1000/avg;
+        let avg_pct = ((avg/confirmed_interval)*100)-100;
+        average_interval.innerText = avg.toFixed(2);;
+        average_frequency.innerText = (1000/avg).toFixed(2);;
+        if(avg_pct>=0){
+            average_pct.innerText = "+" + avg_pct.toFixed(2);
+        } else {
+            average_pct.innerText = avg_pct.toFixed(2);
+        }
     }
     
     
@@ -111,7 +131,7 @@ function reset_stats(){
     if(timer!==undefined){
         window.cancelTimer(timer);
         measured_intervals = [];
-        measured_intervals_index = 0;
+        measured_index = 0;
         last_pulse_time = window.performance.now();
         timer = window.setTimeout(timer_pulse, confirmed_interval);
         next_pulse_time = last_pulse_time + confirmed_interval;
@@ -121,12 +141,12 @@ function reset_stats(){
 
 function timer_pulse(){
     let time_now = window.performance.now();
-    measured_intervals[measured_intervals_index] = (time_now - last_pulse_time);
-    measured_intervals_index++;
-    if(measured_intervals_index >= measured_intervals_limit) measured_intervals_index = 0;
+    measured_intervals[measured_index] = (time_now - last_pulse_time);
+    measured_drifts[measured_index] = (time_now - next_pulse_time);
+    measured_index++;
+    if(measured_index >= measured_limit) measured_index = 0;
     last_pulse_time = time_now;
     next_pulse_time += confirmed_interval;
-    console.log("npt", next_pulse_time);
     timer = window.setTimeout(timer_pulse, next_pulse_time-window.performance.now());
     if(test_in_action) send_events();
 }
