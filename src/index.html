@@ -38,16 +38,17 @@
     <div class="property">Status:</div><div class="value" id="status_text">--</div>
     
     <h2>Settings</h2>
-    <div><input type="range" style="width: 600px" id="interval_ms" min=5 max=500 value=500 onchange="confirm_slider()" onmousemove="update_slider_info()"></input></div>
+    <div><input type="range" style="width: 600px" id="interval_ms" min=5 max=500 value=500 onchange="confirm_slider()" oninput="update_slider_info()"></input></div>
     <div><div class="property">Event Rate:</div><div class="value"><span id="interval_readout">--</span> ms, <span id="frequency_readout">--</span> Hz</div></div>
-    <div><button>Activate Test</button><button>Deactive Test</button></div>
-    <div><button>Add Sequence</button><button>Discard Sequence</button></div>
+    <div><button onclick="activate_test()">Activate Test</button><button onclick="deactivate_test()">Deactive Test</button></div>
+    <div><button onclick="increase_sequences()">Add Sequence</button><button onclick="decrease_sequences()">Discard Sequence</button></div>
     
     <h2>Timing Statistics</h2>
     <div><div class="property">Average:</div><div class="value"><span id="average_interval">--</span> ms, <span id="average_frequency">--</span> Hz (<span id="average_pct">--</span>%)</div></div>
     <div><div class="property">Maximum Drift:</div><div class="value"><span id="max_drift">--</span> ms (<span id="max_drift_pct">--</span>%)</div></div>
     
     <h2>UMCP Statistics</h2>
+    <div><div class="property">Total Sequences:</div><div class="value" id="total_seqs_count_text">--</div></div>
     <div><div class="property">Active Sequences:</div><div class="value" id="active_seqs_count_text">--</div></div>
     <div><div class="property">Requests Sent:</div><div class="value" id="requests_status">--</div></div>
     <div><div class="property">Successes:</div><div class="value" id="requests_successful">--</div></div>

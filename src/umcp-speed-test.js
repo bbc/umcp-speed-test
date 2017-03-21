@@ -3,6 +3,7 @@ var new_seqs_count = 0;
 var active_seqs = [];
 var test_in_action = false;
 var status_text = document.getElementById("status_text");
+var total_seqs_count_text = document.getElementById("total_seqs_count_text");
 var active_seqs_count_text = document.getElementById("active_seqs_count_text");
 active_seqs_count_text.innerText = active_seqs.length;
 
@@ -52,7 +53,7 @@ umcp.newComposition("Speed Test: " + ("00" + date.getDate().toString()).slice(-2
         window.timer = window.setTimeout(function(){window.timer_pulse()}, window.confirmed_interval);
         window.next_pulse_time = window.last_pulse_time + window.confirmed_interval;
         window.stat_timer = window.setInterval(function(){window.update_stats()}, 250);
-        window.status_text.innerText = "Running...";
+        window.status_text.innerText = "Timers Running...";
     });
     
 }).catch(function(e){
@@ -62,15 +63,17 @@ umcp.newComposition("Speed Test: " + ("00" + date.getDate().toString()).slice(-2
 
 function activate_test(){
     test_in_action = true;
+    status_text.innerText = "Under Test...";
 }
 
 function deactivate_test(){
     test_in_action = false;
+    status_text.innerText = "Testing Ended.";
 }
 
 function update_slider_info(){
     interval_readout.innerText = interval_ms.value;
-    frequency_readout.innerText = 1000/interval_ms.value;
+    frequency_readout.innerText = (1000/interval_ms.value).toFixed(2);
 }
 
 function confirm_slider(){
@@ -167,6 +170,8 @@ function increase_sequences(){
     status_text.innerText = "Creating Sequence...";
     return new Promise(function(resolve, reject){
         window.new_seqs_count++;
+        window.total_seqs_count_text.innerText = window.new_seqs_count;
+   
         window.comp.newSequence(String(window.new_seqs_count-1), "urn:x-ipstudio:format:event.composition.sequence.generic").then(function(s){
             window.active_seqs.push(s);
             window.active_seqs_count_text.innerText = window.active_seqs.length;
@@ -184,7 +189,7 @@ function decrease_sequences(){
         status_text.innerText = "No active sequences remaining!";
     } else {
         status_text.innerText = "Deactivating Sequence...";
-        active_seqs = active_seqs.splice(-1);
+        active_seqs.pop();
         active_seqs_count_text.innerText = active_seqs.length;
         status_text.innerText = "Deactivating Sequence... Done";
     }
