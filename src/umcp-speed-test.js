@@ -37,29 +37,37 @@ update_slider_info();
 
 status_text.innerText = "Creating UMCP Client Instance...";
 var umcp = new umcplib('http://localhost:8090');
-
-status_text.innerText = "Creating Composition...";
 var comp = null
-var date = new Date();
+status_text.innerText = "Creating UMCP Client Instance... Done";
 
-umcp.newComposition("Speed Test: " + ("00" + date.getDate().toString()).slice(-2) + "/" + ("00" + (date.getMonth()+1).toString()).slice(-2) + "/" + date.getFullYear().toString() + " " + ("00" + date.getHours().toString()).slice(-2) + ":" + ("00" + date.getMinutes().toString()).slice(-2) + ":" + ("00" + date.getSeconds().toString()).slice(-2)).then(function(c){
-    window.comp = c;
-    window.status_text.innerText = "Creating Composition... Done";
-    
-    window.status_text.innerText = "Creating Initial Sequence...";
-    increase_sequences().then(function(){
-        window.status_text.innerText = "Starting Timers...";
-        window.last_pulse_time = window.performance.now();
-        window.timer = window.setTimeout(function(){window.timer_pulse()}, window.confirmed_interval);
-        window.next_pulse_time = window.last_pulse_time + window.confirmed_interval;
-        window.stat_timer = window.setInterval(function(){window.update_stats()}, 250);
-        window.status_text.innerText = "Timers Running...";
+function init_test(){
+    if(comp!==null){
+        status_text.innerText = "Composition already prepared!";
+        return;
+    }
+        
+    status_text.innerText = "Creating Composition...";
+    var date = new Date();
+
+    umcp.newComposition("Speed Test: " + ("00" + date.getDate().toString()).slice(-2) + "/" + ("00" + (date.getMonth()+1).toString()).slice(-2) + "/" + date.getFullYear().toString() + " " + ("00" + date.getHours().toString()).slice(-2) + ":" + ("00" + date.getMinutes().toString()).slice(-2) + ":" + ("00" + date.getSeconds().toString()).slice(-2)).then(function(c){
+        window.comp = c;
+        window.status_text.innerText = "Creating Composition... Done";
+        
+        window.status_text.innerText = "Creating Initial Sequence...";
+        increase_sequences().then(function(){
+            window.status_text.innerText = "Starting Timers...";
+            window.last_pulse_time = window.performance.now();
+            window.timer = window.setTimeout(function(){window.timer_pulse()}, window.confirmed_interval);
+            window.next_pulse_time = window.last_pulse_time + window.confirmed_interval;
+            window.stat_timer = window.setInterval(function(){window.update_stats()}, 250);
+            window.status_text.innerText = "Timers Running...";
+        });
+        
+    }).catch(function(e){
+        window.status_text.innerText = "Creating Composition... FAILED!";
+        throw e;
     });
-    
-}).catch(function(e){
-    window.status_text.innerText = "Creating Composition... FAILED!";
-    throw e;
-});
+}
 
 function activate_test(){
     test_in_action = true;
@@ -167,6 +175,10 @@ function send_events(){
 }
 
 function increase_sequences(){
+    if(comp===null){
+        status_text.innerText = "Error: Prepare the composition first.";
+        return;
+    }
     status_text.innerText = "Creating Sequence...";
     return new Promise(function(resolve, reject){
         window.new_seqs_count++;
